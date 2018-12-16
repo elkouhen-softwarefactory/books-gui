@@ -3,6 +3,9 @@ kind: Config
 build:
   artifacts:
   - image: registry.k8.wildwidewest.xyz/repository/docker-repository/opus/books-gui
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_NAME}}:{{.TAG}}"
 deploy:
   helm:
     releases:
@@ -11,10 +14,18 @@ deploy:
       setValues:
         h2.enabled: false
       setValueTemplates:
-        image.tag: "{{.DIGEST}}"
+        image.tag: "{{.TAG}}"
       overrides:
         books-api:
           image:
             repository: registry.k8.wildwidewest.xyz/repository/docker-repository/opus/books-gui
-          ingress:
-            enabled: false
+        ingress:
+          secretName: books-gui-dev-secret
+          hosts:
+          - books-gui-dev.k8.wildwidewest.xyz
+          tls:
+          - hosts:
+            - books-gui-dev.k8.wildwidewest.xyz
+            secretName: books-gui-dev-secret
+          annotations:
+            nginx.ingress.kubernetes.io/auth-secret: books-gui-dev-basicauthsecret
