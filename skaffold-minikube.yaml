@@ -1,0 +1,20 @@
+apiVersion: skaffold/v1beta1
+kind: Config
+build:
+  artifacts:
+  - image: localhost:5000/opus-books-gui
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_NAME}}:{{.TAG}}"
+deploy:
+  helm:
+    releases:
+    - name: books-gui
+      chartPath: ../charts/books-gui
+      setValues:
+        ingress.enabled: false
+        h2.enabled: false
+        image.repository: localhost:5000/opus-books-gui
+        service.type: NodePort
+      setValueTemplates:
+        image.tag: "{{.TAG}}"
