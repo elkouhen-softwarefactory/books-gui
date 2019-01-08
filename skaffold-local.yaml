@@ -3,9 +3,6 @@ kind: Config
 build:
   artifacts:
   - image: localhost:5000/opus-books-gui
-  tagPolicy:
-    envTemplate:
-      template: "{{.IMAGE_NAME}}:{{.TAG}}"
 deploy:
   helm:
     releases:
@@ -14,7 +11,7 @@ deploy:
       setValues:
         ingress.enabled: false
         h2.enabled: false
-        image.repository: localhost:5000/opus-books-gui
+        image.repository: kube-registry:5000/opus-books-gui
         service.type: NodePort
       setValueTemplates:
-        image.tag: "{{.TAG}}"
+        image.tag: "{{.DIGEST}}"
