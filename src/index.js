@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import {createStore} from 'redux'
 import {Provider} from 'react-redux'
@@ -9,14 +10,15 @@ import * as serviceWorker from './serviceWorker';
 
 import * as actions from './actions/actions'
 import bookReducer from './reducers/bookReducer'
+import axios from 'axios';
 
 let store = createStore(bookReducer);
 
-store.dispatch(actions.loadBook({
-    key: 1,
-    title: 'Clean Code: A Handbook of Agile Software Craftsmanship',
-    author: 'Robert Martin'
-}));
+axios.get('/books')
+    .then(function (response) {
+        store.dispatch(actions.loadBooks(response.data));
+    });
+
 
 ReactDOM.render(<Provider store={store}><App/></Provider>, document.getElementById('root'));
 
