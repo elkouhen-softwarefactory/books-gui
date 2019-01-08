@@ -3,9 +3,6 @@ kind: Config
 build:
   artifacts:
   - image: registry.k8.wildwidewest.xyz/repository/docker-repository/opus/books-gui
-  tagPolicy:
-    envTemplate:
-      template: "{{.IMAGE_NAME}}:{{.TAG}}"
 deploy:
   helm:
     releases:
@@ -14,7 +11,7 @@ deploy:
       setValues:
         h2.enabled: false
       setValueTemplates:
-        image.tag: "{{.TAG}}"
+        image.tag: "{{.DIGEST}}"
       overrides:
         books-api:
           image:
