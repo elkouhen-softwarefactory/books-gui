@@ -20,6 +20,8 @@ COPY src/ src/
 
 RUN npm run-script build
 
+RUN sonar-scanner -Dsonar.host.url=https://sonarqube.k8.wildwidewest.xyz -Dsonar.login=$SONAR_TOKEN
+
 FROM nginx:1.15.7
 
 COPY --from=node /apps/books/build/* /usr/share/nginx/html/
