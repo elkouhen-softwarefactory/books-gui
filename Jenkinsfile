@@ -16,8 +16,6 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
 
     node('books-api-pod') {
 
-        def branch = env.JOB_NAME.replaceFirst('.+/', '');
-
         properties([
                 buildDiscarder(
                         logRotator(
@@ -29,40 +27,25 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
                 )
         ])
 
-        def now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
+        def TAG = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
 
         stage('CHECKOUT') {
             checkout scm
         }
 
-        /* container('maven') {
-
-            stage('BUILD SOURCES') {
-                withCredentials([string(credentialsId: 'sonarqube_token', variable: 'token')]) {
-
-                    // sh 'mvn clean package sonar:sonar -Dsonar.host.url=http://sonarqube-sonarqube:9000 -Dsonar.java.binaries=target -Dsonar.login=${token} -DskipTests'
-                     sh 'mvn clean package'
-                }
-            }
-        } */
-
         container('docker') {
 
-            stage('BUILD DOCKER IMAGE') {
+            stage('BUILD') {
 
-                sh 'mkdir /etc/docker'
+                withCredentials([string(credentialsId: 'sonarqube_token', variable: 'sonarqube_tok'),
+                                 string(credentialsId: 'registry_url', variable: 'registry_url')]) {
 
-                // le registry est insecure (pas de https)
-                sh 'echo {"insecure-registries" : ["registry.k8.wildwidewest.xyz"]} > /etc/docker/daemon.json'
+                    withDockerRegistry(credentialsId: 'nexus_user', url: "${registry_url}") {
+                        sh "docker build . --build-arg SONAR_TOKEN=${sonarqube_tok} --tag registry.k8.wildwidewest.xyz/repository/docker-repository/opus/books-api:$TAG"
 
-                withCredentials([usernamePassword(credentialsId: 'nexus_user', usernameVariable: 'username', passwordVariable: 'password')]) {
-
-                    sh "docker login -u ${username} -p ${password} registry.k8.wildwidewest.xyz"
+                        sh "docker push registry.k8.wildwidewest.xyz/repository/docker-repository/opus/books-api:$TAG"
+                    }
                 }
-
-                sh "docker build . --tag registry.k8.wildwidewest.xyz/repository/docker-repository/opus/books-gui:$now"
-
-                sh "docker push registry.k8.wildwidewest.xyz/repository/docker-repository/opus/books-gui:$now"
             }
         }
 
@@ -70,7 +53,7 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
 
             build job: "/SofteamOuest-Opus/chart-run/master",
                     wait: false,
-                    parameters: [string(name: 'image', value: "$now"),
+                    parameters: [string(name: 'image', value: "$TAG"),
                                  string(name: 'chart', value: "books-gui")]
         }
 
