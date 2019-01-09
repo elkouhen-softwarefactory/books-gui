@@ -1,5 +1,7 @@
 FROM node:8.14.0-jessie-slim as node
 
+ARG SONAR_TOKEN
+
 MAINTAINER mehdi.elkouhen@softeam.fr
 
 WORKDIR /apps/books
@@ -10,11 +12,15 @@ COPY package-lock.json ./
 
 RUN npm install
 
-COPY public/ public/ 
+RUN npm install -g sonarqube-scanner
+
+COPY public/ public/
 
 COPY src/ src/
 
 RUN npm run-script build
+
+RUN sonar-scanner -Dsonar.host.url=https://sonarqube.k8.wildwidewest.xyz -Dsonar.login=$SONAR_TOKEN
 
 FROM nginx:1.15.7
 
