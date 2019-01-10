@@ -23,8 +23,8 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
                                 artifactNumToKeepStr: '1',
                                 daysToKeepStr: '3',
                                 numToKeepStr: '3'
-                        )
-                )
+                        )),
+                pipelineTriggers([pollSCM('*/1 * * * *')])
         ])
 
         def TAG = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
@@ -45,7 +45,7 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
                                  string(credentialsId: 'registry_url', variable: 'registry_url')]) {
 
                     withDockerRegistry(credentialsId: 'nexus_user', url: "${registry_url}") {
-                        sh "docker build . --build-arg SONAR_TOKEN=${sonarqube_tok} --tag ${URL}/repository/docker-repository/${IMAGE}:$TAG"
+                        sh "docker build . -f Dockerfile.ic --build-arg SONAR_TOKEN=${sonarqube_tok} --tag ${URL}/repository/docker-repository/${IMAGE}:$TAG"
 
                         sh "docker push ${URL}/repository/docker-repository/${IMAGE}:$TAG"
                     }
