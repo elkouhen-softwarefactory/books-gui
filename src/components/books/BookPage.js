@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
-import BookRow from "./BookRow";
+import BookRow from './BookRow';
 
 export class BookPage extends Component {
     render() {
-        
+
+        console.log("BookPage: " + JSON.stringify(this.props));
+
         return (
             <>
                 <h1>Books</h1>
@@ -17,7 +19,7 @@ export class BookPage extends Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {this.props.books.map(book => <BookRow key={book.key} book={book}/>)}
+                    {this.props.books && this.props.books.map(book => <BookRow key={book.id} book={book}/>)}
                     </tbody>
                 </table>
             </>
@@ -29,7 +31,7 @@ const mapStateToProps = state => {
 
     //debugger;
     return {
-        books: state
+        books: state.bookReducer
     }
 };
 

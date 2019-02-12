@@ -6,8 +6,8 @@ const BookRow = (props) => {
     const {book} = props;
 
     return (
-        <tr>
-            <th scope="row" key={book.key}>{book.key}</th>
+        <tr scope="row" key={book.key}>
+            <th>{book.id}</th>
             <td>{book.author}</td>
             <td>{book.title}</td>
         </tr>
