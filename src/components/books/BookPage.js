@@ -31,7 +31,7 @@ const mapStateToProps = state => {
 
     //debugger;
     return {
-        books: state.bookReducer
+        books: state.books
     }
 };
 

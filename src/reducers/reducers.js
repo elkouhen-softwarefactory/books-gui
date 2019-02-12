@@ -23,6 +23,6 @@ export function bookReducer(state = [], action) {
 export function createRootReducer(history) {
     return combineReducers({
         router: connectRouter(history),
-        bookReducer
+        books: bookReducer
     });
 }
