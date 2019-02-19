@@ -1,6 +1,4 @@
 #!groovy
-import java.text.*
-
 // pod utilisé pour la compilation du projet
 podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
 
@@ -27,7 +25,7 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
                 pipelineTriggers([pollSCM('*/1 * * * *')])
         ])
 
-        def TAG = "t" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
+        def TAG = "t$BUILD_NUMBER"
 
         def URL = "registry.k8.wildwidewest.xyz"
 
@@ -55,11 +53,12 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
 
         stage('RUN') {
 
-            build job: "/SofteamOuest-Opus/chart-run/master",
+            if (BRANCH_NAME == 'develop') {
+                build job: "/SofteamOuest-Opus/chart-run/$BRANCH_NAME",
                     wait: false,
                     parameters: [string(name: 'image', value: "$TAG"),
-                                 string(name: 'chart', value: "books-gui")]
+                                     string(name: 'chart', value: "books-gui")]
         }
-
+        }
     }
 }
