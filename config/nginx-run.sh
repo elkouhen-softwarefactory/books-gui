@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Launching nginx..."
+echo "Launching NGinx ..."
 
 envsubst '${books_api_url}' < /tmp/default.template > /tmp/default.conf
 
