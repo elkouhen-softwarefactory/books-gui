@@ -53,7 +53,7 @@ ReactDOM.render(
                 <div className="container">
                     <Switch>
                         <Route exact path="/pg/books" component={BookPage}/>
-                        <Route render={() => (<div>Page not found</div>)}/>
+                        <Route render={() => (<div>Page non trouvée !</div>)}/>
                     </Switch>
                 </div>
             </>
