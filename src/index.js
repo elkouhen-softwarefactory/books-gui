@@ -35,7 +35,7 @@ axios.interceptors.response.use(response => {
     return Promise.reject(error)
 });
 
-axios.get('/books')
+axios.get('/api/books')
     .then(function (response) {
         store.dispatch(loadBooks(response.data));
     })
