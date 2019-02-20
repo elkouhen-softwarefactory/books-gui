@@ -51,13 +51,10 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
         }
 
         stage('RUN') {
-
-            if (BRANCH_NAME == 'develop') {
                 build job: "/SofteamOuest-Opus/chart-run/$BRANCH_NAME",
                     wait: false,
                     parameters: [string(name: 'image', value: "$TAG"),
-                                     string(name: 'chart', value: "books-gui")]
-        }
+                                 string(name: 'chart', value: "books-gui")]
         }
     }
 }
