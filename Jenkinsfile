@@ -23,11 +23,10 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
                                 artifactNumToKeepStr: '1',
                                 daysToKeepStr: '3',
                                 numToKeepStr: '3'
-                        )),
-                pipelineTriggers([pollSCM('*/1 * * * *')])
+                        ))
         ])
 
-        def TAG = "t" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
+        def TAG = "$BRANCH_NAME-$BUILD_NUMBER"
 
         def URL = "registry.k8.wildwidewest.xyz"
 
@@ -55,11 +54,12 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
 
         stage('RUN') {
 
-            build job: "/SofteamOuest-Opus/chart-run/master",
+            if (BRANCH_NAME == 'develop') {
+                build job: "/SofteamOuest-Opus/chart-run/$BRANCH_NAME",
                     wait: false,
                     parameters: [string(name: 'image', value: "$TAG"),
                                  string(name: 'chart', value: "books-gui")]
         }
-
+        }
     }
 }
