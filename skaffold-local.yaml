@@ -2,7 +2,7 @@ apiVersion: skaffold/v1beta1
 kind: Config
 build:
   artifacts:
-  - image: localhost:5000/opus-books-gui
+  - image: registry/opus-books-gui
 deploy:
   helm:
     releases:
@@ -11,7 +11,8 @@ deploy:
       setValues:
         ingress.enabled: false
         h2.enabled: false
-        image.repository: kube-registry:5000/opus-books-gui
+        image.repository: registry/opus-books-gui
         service.type: NodePort
+        service.port: 9000
       setValueTemplates:
         image.tag: "{{.DIGEST}}"
