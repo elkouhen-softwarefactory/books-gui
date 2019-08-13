@@ -26,9 +26,9 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
 
         def TAG = "$BRANCH_NAME-$BUILD_NUMBER"
 
-        def URL = "registry.k8.wildwidewest.xyz"
+        def URL = "registry-nexus.melkouhen.net"
 
-        def IMAGE = "opus/books-gui"
+        def IMAGE = "elkouhen/books-gui"
 
         stage('CHECKOUT') {
             checkout scm
@@ -38,11 +38,11 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
 
             stage('BUILD') {
 
-                withCredentials([string(credentialsId: 'sonarqube_token', variable: 'sonarqube_tok'),
-                                 string(credentialsId: 'registry_url', variable: 'registry_url')]) {
+                withCredentials([string(credentialsId: 'registry_url', variable: 'registry_url')]) {
 
-                    withDockerRegistry(credentialsId: 'nexus_user', url: "${registry_url}") {
-                        sh "docker build . -f Dockerfile.ic --build-arg SONAR_TOKEN=${sonarqube_tok} --tag ${URL}/repository/docker-repository/${IMAGE}:$TAG"
+                     withDockerRegistry(credentialsId: 'nexus_user', url: "${registry_url}") {
+
+                        sh "docker build . -f Dockerfile --tag ${URL}/repository/docker-repository/${IMAGE}:$TAG"
 
                         sh "docker push ${URL}/repository/docker-repository/${IMAGE}:$TAG"
                     }
@@ -53,7 +53,7 @@ podTemplate(label: 'books-api-pod', nodeSelector: 'medium', containers: [
         stage('RUN') {
 
             if (BRANCH_NAME == 'develop') {
-                build job: "/SofteamOuest-Opus/chart-run/$BRANCH_NAME",
+                build job: "/elkouhen-softwarefactory/app-chart-run/$BRANCH_NAME",
                     wait: false,
                     parameters: [string(name: 'image', value: "$TAG"),
                                      string(name: 'chart', value: "books-gui")]

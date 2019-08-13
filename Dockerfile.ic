@@ -2,7 +2,7 @@ FROM node:8.14.0-jessie-slim as node
 
 ARG SONAR_TOKEN
 
-MAINTAINER mehdi.elkouhen@softeam.fr
+MAINTAINER melkouhen@ippon.fr
 
 WORKDIR /apps/books
 
