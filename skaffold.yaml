@@ -1,0 +1,21 @@
+apiVersion: skaffold/v1beta13
+kind: Config
+build:
+  artifacts:
+  - image: elkouhen/books-gui
+deploy:
+  helm:
+    releases:
+    - name: books-gui-dev
+      chartPath: ../app-charts/books-gui
+      setValues:
+        h2.enabled: false
+        service.type: LoadBalancer
+        image.registry: elkouhen/books-gui
+      setValueTemplates:
+        image.tag: "{{.DIGEST}}"
+      overrides:
+        auth:
+          enabled: false
+        ingress:
+          enabled: false
